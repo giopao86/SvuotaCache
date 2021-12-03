@@ -1,6 +1,6 @@
 ﻿
 
-namespace SvuotaCache
+namespace EmptyCache
 {
     class Program
     {
