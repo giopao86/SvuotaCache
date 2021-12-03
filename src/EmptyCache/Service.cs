@@ -1,4 +1,4 @@
-namespace SvuotaCache
+namespace EmptyCache
 {
     public class Service
     {
