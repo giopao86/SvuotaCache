@@ -22,11 +22,10 @@ namespace EmptyCache.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Service s = null;
+        private Service s = new Service();
         public MainWindow()
         {
             InitializeComponent();
-            s = new Service();
             s.LogEvent += this.Log;
         }
 
