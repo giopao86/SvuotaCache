@@ -3,7 +3,7 @@ namespace EmptyCache.Lib
 {
     public class Service
     {
-        public event EventHandler<LogEventArgs> LogEvent;
+        public event EventHandler<LogEventArgs>? LogEvent;
         IEnumerable<string> folders = new List<string>();
         public void Execute()
         {
@@ -38,7 +38,7 @@ namespace EmptyCache.Lib
             if (!Directory.GetFiles(folder).Any() && !Directory.GetDirectories(folder).Any())
                 Directory.Delete(folder);
         }
-        private void Log(string file, bool success, string ErrorMessage)
+        private void Log(string file, bool success, string? ErrorMessage)
         {
 
             if (LogEvent != null)
