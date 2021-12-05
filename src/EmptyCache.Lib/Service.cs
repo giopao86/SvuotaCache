@@ -59,12 +59,19 @@ namespace EmptyCache.Lib
             string edgeFolder = @$"{localApplicationData}\Microsoft\Edge\User Data";
 
             return
-            findfolder(chromeFolder, @"Service Worker")
-                .Union(findfolder(chromeFolder, @"Code Cache"))
-                .Union(findfolder(chromeFolder, "Cache"))
-                .Union(findfolder(edgeFolder, @"Service Worker"))
-                .Union(findfolder(edgeFolder, @"Code Cache"))
-                .Union(findfolder(edgeFolder, "Cache"));
+                ChromeBrowser(chromeFolder)
+                .Union(ChromeBrowser(edgeFolder));
+        }
+
+        static IEnumerable<string> ChromeBrowser(string prefixPath)
+        {
+            return findfolder(prefixPath, @"Service Worker")
+                .Union(findfolder(prefixPath, @"Code Cache"))
+                .Union(findfolder(prefixPath, "Cache"))
+                .Union(findfolder(prefixPath, "Storage"))
+                .Union(findfolder(prefixPath, "blob_storage"))
+                .Union(findfolder(prefixPath, "Session Storage"))
+                .Union(findfolder(prefixPath, "IndexedDB"));
         }
         static IEnumerable<string> LoadSubDirs(string dir)
         {
