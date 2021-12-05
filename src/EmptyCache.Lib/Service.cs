@@ -1,7 +1,9 @@
-namespace EmptyCache
+using EmptyCache.Lib.Models;
+namespace EmptyCache.Lib
 {
     public class Service
     {
+        public event EventHandler<LogEventArgs>? LogEvent;
         IEnumerable<string> folders = new List<string>();
         public void Execute()
         {
@@ -25,44 +27,64 @@ namespace EmptyCache
                 try
                 {
                     File.Delete(file);
-                    Console.WriteLine($"{file} rimosso");
+                    Log(file, true, null);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"{file} NON rimosso - {ex.Message}");
+                    Log(file, false, ex.Message);
                 }
             }
 
             if (!Directory.GetFiles(folder).Any() && !Directory.GetDirectories(folder).Any())
                 Directory.Delete(folder);
         }
+        private void Log(string file, bool success, string? ErrorMessage)
+        {
 
+            if (LogEvent != null)
+            {
+                LogEventArgs e = new LogEventArgs()
+                {
+                    FilePath = file,
+                    Success = success,
+                    ErrorMessage = ErrorMessage
+                };
+                LogEvent(this, e);
+            }
+        }
         static IEnumerable<string> GetListfolder()
         {
             string localApplicationData = Environment.ExpandEnvironmentVariables("%localappdata%");
             string chromeFolder = @$"{localApplicationData}\Google\Chrome\User Data";
             string edgeFolder = @$"{localApplicationData}\Microsoft\Edge\User Data";
-            
-            return 
-            findfolder(chromeFolder, @"Service Worker")
-                .Union(findfolder(chromeFolder, @"Code Cache"))
-                .Union(findfolder(chromeFolder, "Cache"))
-                .Union(findfolder(edgeFolder, @"Service Worker"))
-                .Union(findfolder(edgeFolder, @"Code Cache"))
-                .Union(findfolder(edgeFolder, "Cache"));
+
+            return
+                ChromeBrowser(chromeFolder)
+                .Union(ChromeBrowser(edgeFolder));
+        }
+
+        static IEnumerable<string> ChromeBrowser(string prefixPath)
+        {
+            return findfolder(prefixPath, @"Service Worker")
+                .Union(findfolder(prefixPath, @"Code Cache"))
+                .Union(findfolder(prefixPath, "Cache"))
+                .Union(findfolder(prefixPath, "Storage"))
+                .Union(findfolder(prefixPath, "blob_storage"))
+                .Union(findfolder(prefixPath, "Session Storage"))
+                .Union(findfolder(prefixPath, "IndexedDB"));
         }
         static IEnumerable<string> LoadSubDirs(string dir)
         {
 
             string[] subdirectoryEntries = Directory.GetDirectories(dir);
-            
+
             foreach (string subdirectory in subdirectoryEntries)
             {
-                yield return subdirectory; 
+                yield return subdirectory;
                 IEnumerable<string> result = LoadSubDirs(subdirectory);
                 foreach (var item in result)
                 {
-                    yield return item; 
+                    yield return item;
                 }
             }
         }
@@ -77,13 +99,6 @@ namespace EmptyCache
                     yield return itemsub;
                 }
                 yield return item;
-            }
-        }
-        void LogFolder()
-        {
-            foreach (string f in folders)
-            {
-                Console.WriteLine(f);
             }
         }
     }
