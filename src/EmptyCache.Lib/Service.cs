@@ -21,24 +21,27 @@ namespace EmptyCache.Lib
 
         private void RemoveFileFromFolder(string folder)
         {
-            IEnumerable<string> files = Directory.GetFiles(folder);
+            List<string> files = Directory.GetFiles(folder).ToList();
+            int total = files.Count;
+            int index = 0;
             foreach (string file in files)
             {
                 try
                 {
                     File.Delete(file);
-                    Log(file, true, null);
+                    Log(file, true, index, total, null);
                 }
                 catch (Exception ex)
                 {
-                    Log(file, false, ex.Message);
+                    Log(file, false, index, total, ex.Message);
                 }
+                index++;
             }
 
             if (!Directory.GetFiles(folder).Any() && !Directory.GetDirectories(folder).Any())
                 Directory.Delete(folder);
         }
-        private void Log(string file, bool success, string? ErrorMessage)
+        private void Log(string file, bool success, int index, int Total, string? ErrorMessage)
         {
 
             if (LogEvent != null)
@@ -47,7 +50,9 @@ namespace EmptyCache.Lib
                 {
                     FilePath = file,
                     Success = success,
-                    ErrorMessage = ErrorMessage
+                    ErrorMessage = ErrorMessage,
+                    Total = Total,
+                    index = index
                 };
                 LogEvent(this, e);
             }
@@ -60,7 +65,11 @@ namespace EmptyCache.Lib
 
             return
                 ChromeBrowser(chromeFolder)
-                .Union(ChromeBrowser(edgeFolder));
+                .Union(ChromeBrowser(edgeFolder))
+                .Union(new string[]{
+                    System.IO.Path.Combine(localApplicationData,@"Microsoft\VisualStudio\Roslyn\Cache")
+                })
+                .Where(x => System.IO.Directory.Exists(x));
         }
 
         static IEnumerable<string> ChromeBrowser(string prefixPath)
