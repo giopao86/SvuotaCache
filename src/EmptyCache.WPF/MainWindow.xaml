@@ -12,7 +12,9 @@
         <StackPanel Orientation="Vertical" Grid.Column="0" Margin="10">
             <Button Name="btnEmptyCache" Click="ManageEmptyCache">Svuota Cache</Button>
         </StackPanel>
-        <TextBox Name="txtLog" Grid.Column="1" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" Margin="10">
-        </TextBox>
+        <StackPanel Orientation="Vertical" Grid.Column="1" Margin="10">
+            <Label Name="lblPerc" FontSize="20" FontWeight="Bold"  />
+            <TextBox Name="txtLog" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Visible" ></TextBox>
+        </StackPanel>
     </Grid>
 </Window>
