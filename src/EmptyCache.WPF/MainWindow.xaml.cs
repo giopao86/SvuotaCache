@@ -38,7 +38,7 @@ namespace EmptyCache.WPF
         {
             this.txtLog.AppendText("\r\n----------------------\r\n");
             this.txtLog.AppendText(e.ToString());
-            this.lblPerc.Content = $"{e.Percent} %";
+            this.lblPerc.Content = $"{e.index}/{e.Total} - {e.Percent} %";
         }
     }
 }
